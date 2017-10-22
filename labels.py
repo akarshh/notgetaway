@@ -111,39 +111,9 @@ def detect_text(path):
     # [END migration_text_detection]
 # [END def_detect_text]
 
-
-# [START def_detect_properties]
-def detect_properties(path):
-    count = 0
-    """Detects image properties in the file."""
-    client = vision.ImageAnnotatorClient()
-
-    # [START migration_image_properties]
-    with io.open(path, 'rb') as image_file:
-        content = image_file.read()
-
-    image = types.Image(content=content)
-
-    response = client.image_properties(image=image)
-    props = response.image_properties_annotation
-    # masterList(props.dominant_colors.colors, count)
-    # count += 1
-    print('Properties:')
-
-    for color in props.dominant_colors.colors:
-        print('fraction: {}'.format(color.pixel_fraction))
-        print('\tr: {}'.format(color.color.red))
-        print('\tg: {}'.format(color.color.green))
-        print('\tb: {}'.format(color.color.blue))
-        print('\ta: {}'.format(color.color.alpha))
-    # [END migration_image_properties]
-# [END def_detect_properties]
-
-
 def run_local(image):
     detect_labels(image)
     detect_text(image)
-    detect_properties(image)
 
 def main(image):
     run_local(image)

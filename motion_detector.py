@@ -1,13 +1,14 @@
 # import necessary packages
 import argparse
+import cv2
 import datetime
 import imutils
 import time
-import cv2
 import subprocess
 
 # Import helper script
 import labels
+import numpy as np
 
 # initialize variables for later
 makeQuery = False
@@ -94,8 +95,6 @@ while True:
 		cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 		text = "Movement detected"
 
-
-
     # draw the text and timestamp on the frame
 	cv2.putText(frame, text, (10, 20),
 		cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
@@ -111,7 +110,10 @@ while True:
 
 	if makeQuery and (time.time() - queryMadeTime) > 3.5:
 
-            cv2.imwrite("frame%d.jpg" % count, frame)     # save frame as JPEG file
+            cv2.imwrite("frame%d.jpg" % count, frame) # save frame as JPEG file
+            img = cv2.imread("frame%d.jpg" % count, frame)
+            px = img[x, y]
+            print px
             labels.main("frame%d.jpg" % count)
 
             makeQuery = False
