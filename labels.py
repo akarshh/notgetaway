@@ -39,7 +39,7 @@ from google.cloud.vision import types
 
 # Define Global Variables
 globalList = []
-PRACTICE_IMAGE_PATH = "./car2.jpg"
+PRACTICE_IMAGE_PATH = "./2cars.jpg"
 
 
 # [START def_detect_labels]
@@ -126,8 +126,6 @@ def run_local(path_to_image):
     detect_labels(path_to_image)
     detect_text(path_to_image)
     detect_text(path_to_image)
-    # detect_logos doens't append to globalList yet
-    detect_logos(path_to_image)
     print(globalList)
     # if args.command == 'labels':
     #     detect_labels(args.path)
