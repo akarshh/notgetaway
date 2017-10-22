@@ -37,11 +37,7 @@ import subprocess
 from google.cloud import vision
 from google.cloud.vision import types
 
-# Define Global Variables
 globalList = []
-PRACTICE_IMAGE_PATH = "./2cars.jpg"
-
-
 # [START def_detect_labels]
 def detect_labels(path):
     """Detects labels in the file."""
@@ -57,12 +53,34 @@ def detect_labels(path):
     labels = response.label_annotations
     for label in labels:
         globalList.append(label.description)
-    # print globalList
+    print globalList
 #     print('Labels:')
 #     for label in labels:
 #         print(label.description)
 #     [END migration_label_detection]
 # [END def_detect_labels]
+
+
+
+# [START def_detect_logos]
+def detect_logos(path):
+    """Detects logos in the file."""
+    client = vision.ImageAnnotatorClient()
+
+    # [START migration_logo_detection]
+    with io.open(path, 'rb') as image_file:
+        content = image_file.read()
+
+    image = types.Image(content=content)
+
+    response = client.logo_detection(image=image)
+    logos = response.logo_annotations
+    print('Logos:')
+
+    for logo in logos:
+        print(logo.description)
+    # [END migration_logo_detection]
+# [END def_detect_logos]
 
 
 # [START def_detect_text]
@@ -81,15 +99,15 @@ def detect_text(path):
 
     for text in texts:
         globalList.append(text.description)
-    # print globalListt
-    # print('Texts:')
-    # for text in texts:
-    #     print('\n"{}"'.format(text.description))
-    #
-    #     vertices = (['({},{})'.format(vertex.x, vertex.y)
-    #                 for vertex in text.bounding_poly.vertices])
-    #
-    #     print('bounds: {}'.format(','.join(vertices)))
+    # print globalList
+    print('Texts:')
+    for text in texts:
+        print('\n"{}"'.format(text.description))
+
+        vertices = (['({},{})'.format(vertex.x, vertex.y)
+                    for vertex in text.bounding_poly.vertices])
+
+        print('bounds: {}'.format(','.join(vertices)))
     # [END migration_text_detection]
 # [END def_detect_text]
 
@@ -122,50 +140,16 @@ def detect_properties(path):
 # [END def_detect_properties]
 
 
-def run_local(path_to_image):
-    detect_labels(path_to_image)
-    detect_text(path_to_image)
-    detect_text(path_to_image)
-    print(globalList)
-    # if args.command == 'labels':
-    #     detect_labels(args.path)
-    # elif args.command == 'text':
-    #     detect_text(args.path)
-    # elif args.command == 'logos':
-    #     detect_logos(args.path)
-    # elif args.command == 'properties':
-    #     detect_properties(args.path)
+def run_local(image):
+    detect_labels(image)
+    detect_text(image)
+    detect_properties(image)
 
-def main():
-    run_local(PRACTICE_IMAGE_PATH)
-
+def main(image):
+    run_local(image)
 
 if __name__ == '__main__':
-    # parser = argparse.ArgumentParser(
-    #     description=__doc__,
-    #     formatter_class=argparse.RawDescriptionHelpFormatter)
-    # subparsers = parser.add_subparsers(dest='command')
-    #
-    # detect_labels_parser = subparsers.add_parser(
-    #     'labels', help=detect_labels.__doc__)
-    # detect_labels_parser.add_argument('path')
-    #
-    #
-    # detect_text_parser = subparsers.add_parser(
-    #     'text', help=detect_text.__doc__)
-    # detect_text_parser.add_argument('path')
-    #
-    #
-    # detect_logos_parser = subparsers.add_parser(
-    #     'logos', help=detect_logos.__doc__)
-    # detect_logos_parser.add_argument('path')
-    #
-    #
-    # properties_parser = subparsers.add_parser(
-    #     'properties', help=detect_properties.__doc__)
-    # properties_parser.add_argument('path')
-    #
-    #
-    # args = parser.parse_args()
 
-    main()
+    main(image)
+
+    run_local(args)

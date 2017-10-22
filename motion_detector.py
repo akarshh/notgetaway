@@ -12,6 +12,8 @@ import labels
 # initialize variables for later
 makeQuery = False
 queryMadeTime = 0
+# count of images captured and saved
+count = 0
 
 
 # construct the argument parser and parse the arguments
@@ -108,14 +110,14 @@ while True:
 	key = cv2.waitKey(1) & 0xFF
 
 	if makeQuery and (time.time() - queryMadeTime) > 3.5:
-        # Make sample query
-			labels.main()
-			#
-			# placeholder for query
-			# print ("Querying...")
 
-			makeQuery = False
-			queryMadeTime = time.time()
+            cv2.imwrite("frame%d.jpg" % count, frame)     # save frame as JPEG file
+            labels.main("frame%d.jpg" % count)
+
+            makeQuery = False
+            queryMadeTime = time.time()
+            # count += 1
+
 
 	# if the `q` key is pressed, break from the lop
 	if key == ord("q"):
