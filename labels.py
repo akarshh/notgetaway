@@ -30,10 +30,14 @@ https://cloud.google.com/vision/docs.
 
 import argparse
 import io
+import time
+import numpy
+import subprocess
 
 from google.cloud import vision
 from google.cloud.vision import types
 
+globalList = []
 # [START def_detect_labels]
 def detect_labels(path):
     """Detects labels in the file."""
@@ -47,10 +51,12 @@ def detect_labels(path):
 
     response = client.label_detection(image=image)
     labels = response.label_annotations
-    print('Labels:')
-
     for label in labels:
-        print(label.description)
+        globalList.append(label.description)
+    print globalList
+    # print('Labels:')
+    # for label in labels:
+    #     print(label.description)
     # [END migration_label_detection]
 # [END def_detect_labels]
 
@@ -120,15 +126,18 @@ def detect_text(path):
 
     response = client.text_detection(image=image)
     texts = response.text_annotations
-    print('Texts:')
 
     for text in texts:
-        print('\n"{}"'.format(text.description))
-
-        vertices = (['({},{})'.format(vertex.x, vertex.y)
-                    for vertex in text.bounding_poly.vertices])
-
-        print('bounds: {}'.format(','.join(vertices)))
+        globalList.append(text.description)
+    print globalList
+    # print('Texts:')
+    # for text in texts:
+    #     print('\n"{}"'.format(text.description))
+    #
+    #     vertices = (['({},{})'.format(vertex.x, vertex.y)
+    #                 for vertex in text.bounding_poly.vertices])
+    #
+    #     print('bounds: {}'.format(','.join(vertices)))
     # [END migration_text_detection]
 # [END def_detect_text]
 
@@ -157,6 +166,7 @@ def detect_text_uri(uri):
 
 # [START def_detect_properties]
 def detect_properties(path):
+    count = 0
     """Detects image properties in the file."""
     client = vision.ImageAnnotatorClient()
 
@@ -168,6 +178,8 @@ def detect_properties(path):
 
     response = client.image_properties(image=image)
     props = response.image_properties_annotation
+    # masterList(props.dominant_colors.colors, count)
+    # count += 1
     print('Properties:')
 
     for color in props.dominant_colors.colors:
@@ -178,7 +190,6 @@ def detect_properties(path):
         print('\ta: {}'.format(color.color.alpha))
     # [END migration_image_properties]
 # [END def_detect_properties]
-
 
 # [START def_detect_properties_uri]
 def detect_properties_uri(uri):
