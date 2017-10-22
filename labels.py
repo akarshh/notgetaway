@@ -68,9 +68,9 @@ def detect_labels(path):
     if globalList[1] == None:
         globalList[1] = labels[0]
 
+
     if globalList[2] == None:
         globalList[2] = labels[1]
-
 
 # [START def_detect_text]
 def detect_text(path):
