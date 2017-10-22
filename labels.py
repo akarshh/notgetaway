@@ -54,28 +54,13 @@ def detect_labels(path):
     for label in labels:
         globalList.append(label.description)
     print globalList
-    # print('Labels:')
-    # for label in labels:
-    #     print(label.description)
-    # [END migration_label_detection]
+#     print('Labels:')
+#     for label in labels:
+#         print(label.description)
+#     [END migration_label_detection]
 # [END def_detect_labels]
 
 
-# [START def_detect_labels_uri]
-def detect_labels_uri(uri):
-    """Detects labels in the file located in Google Cloud Storage or on the
-    Web."""
-    client = vision.ImageAnnotatorClient()
-    image = types.Image()
-    image.source.image_uri = uri
-
-    response = client.label_detection(image=image)
-    labels = response.label_annotations
-    print('Labels:')
-
-    for label in labels:
-        print(label.description)
-# [END def_detect_labels_uri]
 
 # [START def_detect_logos]
 def detect_logos(path):
@@ -97,21 +82,6 @@ def detect_logos(path):
     # [END migration_logo_detection]
 # [END def_detect_logos]
 
-# [START def_detect_logos_uri]
-def detect_logos_uri(uri):
-    """Detects logos in the file located in Google Cloud Storage or on the Web.
-    """
-    client = vision.ImageAnnotatorClient()
-    image = types.Image()
-    image.source.image_uri = uri
-
-    response = client.logo_detection(image=image)
-    logos = response.logo_annotations
-    print('Logos:')
-
-    for logo in logos:
-        print(logo.description)
-# [END def_detect_logos_uri]
 
 # [START def_detect_text]
 def detect_text(path):
@@ -142,28 +112,6 @@ def detect_text(path):
 # [END def_detect_text]
 
 
-# [START def_detect_text_uri]
-def detect_text_uri(uri):
-    """Detects text in the file located in Google Cloud Storage or on the Web.
-    """
-    client = vision.ImageAnnotatorClient()
-    image = types.Image()
-    image.source.image_uri = uri
-
-    response = client.text_detection(image=image)
-    texts = response.text_annotations
-    print('Texts:')
-
-    for text in texts:
-        print('\n"{}"'.format(text.description))
-
-        vertices = (['({},{})'.format(vertex.x, vertex.y)
-                    for vertex in text.bounding_poly.vertices])
-
-        print('bounds: {}'.format(','.join(vertices)))
-# [END def_detect_text_uri]
-
-
 # [START def_detect_properties]
 def detect_properties(path):
     count = 0
@@ -191,25 +139,6 @@ def detect_properties(path):
     # [END migration_image_properties]
 # [END def_detect_properties]
 
-# [START def_detect_properties_uri]
-def detect_properties_uri(uri):
-    """Detects image properties in the file located in Google Cloud Storage or
-    on the Web."""
-    client = vision.ImageAnnotatorClient()
-    image = types.Image()
-    image.source.image_uri = uri
-
-    response = client.image_properties(image=image)
-    props = response.image_properties_annotation
-    print('Properties:')
-
-    for color in props.dominant_colors.colors:
-        print('frac: {}'.format(color.pixel_fraction))
-        print('\tr: {}'.format(color.color.red))
-        print('\tg: {}'.format(color.color.green))
-        print('\tb: {}'.format(color.color.blue))
-        print('\ta: {}'.format(color.color.alpha))
-# [END def_detect_properties_uri]
 
 def run_local(args):
     if args.command == 'labels':
@@ -221,16 +150,6 @@ def run_local(args):
     elif args.command == 'properties':
         detect_properties(args.path)
 
-def run_uri(args):
-    if args.command == 'text-uri':
-        detect_text_uri(args.uri)
-    elif args.command == 'labels-uri':
-        detect_labels_uri(args.uri)
-    elif args.command == 'logos-uri':
-        detect_logos_uri(args.uri)
-    elif args.command == 'properties-uri':
-        detect_properties_uri(args.uri)
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description=__doc__,
@@ -241,38 +160,22 @@ if __name__ == '__main__':
         'labels', help=detect_labels.__doc__)
     detect_labels_parser.add_argument('path')
 
-    labels_file_parser = subparsers.add_parser(
-        'labels-uri', help=detect_labels_uri.__doc__)
-    labels_file_parser.add_argument('uri')
 
     detect_text_parser = subparsers.add_parser(
         'text', help=detect_text.__doc__)
     detect_text_parser.add_argument('path')
 
-    text_file_parser = subparsers.add_parser(
-        'text-uri', help=detect_text_uri.__doc__)
-    text_file_parser.add_argument('uri')
 
     detect_logos_parser = subparsers.add_parser(
         'logos', help=detect_logos.__doc__)
     detect_logos_parser.add_argument('path')
 
-    logos_file_parser = subparsers.add_parser(
-        'logos-uri', help=detect_logos_uri.__doc__)
-    logos_file_parser.add_argument('uri')
 
     properties_parser = subparsers.add_parser(
         'properties', help=detect_properties.__doc__)
     properties_parser.add_argument('path')
 
-    properties_file_parser = subparsers.add_parser(
-        'properties-uri',
-        help=detect_properties_uri.__doc__)
-    properties_file_parser.add_argument('uri')
 
     args = parser.parse_args()
 
-    if ('uri' in args.command):
-        run_uri(args)
-    else:
-        run_local(args)
+    run_local(args)
