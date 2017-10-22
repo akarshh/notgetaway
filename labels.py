@@ -37,7 +37,16 @@ import subprocess
 from google.cloud import vision
 from google.cloud.vision import types
 
-globalList = []
+# format:    [license, make, model, time]
+globalList = [None, None, None, None]
+car_makes_list = ['bmw', 'volkswagen', 'honda', 'toyota', 'chevrolet', 'chrysler',
+            'ford', 'fiat', 'dodge', 'gmc', 'hyundai', 'jeep', 'kia',
+            'land rover', 'lexus', 'lincoln', 'mazda', 'mercedes', 'mini',
+            'mitsubishi', 'nissan', 'renault', 'scion', 'skoda', 'suzuki',
+            'tesla', 'volvo']
+car_type = ['hatchback', 'sedan', 'mpv', 'suv', 'crossover', 'coupe',
+            'convertible']
+
 # [START def_detect_labels]
 def detect_labels(path):
     """Detects labels in the file."""
@@ -52,35 +61,11 @@ def detect_labels(path):
     response = client.label_detection(image=image)
     labels = response.label_annotations
     for label in labels:
-        globalList.append(label.description)
-    print globalList
-#     print('Labels:')
-#     for label in labels:
-#         print(label.description)
-#     [END migration_label_detection]
-# [END def_detect_labels]
+        if label in car_makes_list:
+            globalList[1] = label
+        if label in car_type:
+            globalList[2] = model
 
-
-
-# [START def_detect_logos]
-def detect_logos(path):
-    """Detects logos in the file."""
-    client = vision.ImageAnnotatorClient()
-
-    # [START migration_logo_detection]
-    with io.open(path, 'rb') as image_file:
-        content = image_file.read()
-
-    image = types.Image(content=content)
-
-    response = client.logo_detection(image=image)
-    logos = response.logo_annotations
-    print('Logos:')
-
-    for logo in logos:
-        print(logo.description)
-    # [END migration_logo_detection]
-# [END def_detect_logos]
 
 
 # [START def_detect_text]
@@ -97,26 +82,24 @@ def detect_text(path):
     response = client.text_detection(image=image)
     texts = response.text_annotations
 
-    for text in texts:
-        globalList.append(text.description)
-    # print globalList
-    print('Texts:')
-    for text in texts:
-        print('\n"{}"'.format(text.description))
+    try:
+        globalList[0] = texts[0].description
+    except:
+        pass
 
-        vertices = (['({},{})'.format(vertex.x, vertex.y)
-                    for vertex in text.bounding_poly.vertices])
-
-        print('bounds: {}'.format(','.join(vertices)))
     # [END migration_text_detection]
 # [END def_detect_text]
 
 def run_local(image):
     detect_labels(image)
     detect_text(image)
+    globalList[3] = time.time()
+
+    # Return vector representing this frame
 
 def main(image):
     run_local(image)
+    return globalList
 
 if __name__ == '__main__':
 

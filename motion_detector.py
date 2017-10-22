@@ -1,20 +1,22 @@
 # import necessary packages
 import argparse
 import cv2
-import datetime
 import imutils
+import json
 import time
-import subprocess
 
 # Import helper script
 import labels
 import numpy as np
 
 # initialize variables for later
+OUTPUTFILENAME = 'output.json'
 makeQuery = False
 queryMadeTime = 0
 # count of images captured and saved
 count = 0
+# Framelist for storage of data collected
+frame_list = []
 
 
 # construct the argument parser and parse the arguments
@@ -96,10 +98,13 @@ while True:
 		text = "Movement detected"
 
     # draw the text and timestamp on the frame
-	cv2.putText(frame, text, (10, 20),
-		cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-	cv2.putText(frame, datetime.datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),
-		(10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
+
+    # ADD THIS TO GET TEXT FOR DEMO
+
+	# cv2.putText(frame, text, (10, 20),
+	# 	cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+	# cv2.putText(frame, datetime.datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),
+	# 	(10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
 
 	# show the frame and record if the user presses a key
 	cv2.imshow("Security Feed", frame)
@@ -111,19 +116,27 @@ while True:
 	if makeQuery and (time.time() - queryMadeTime) > 3.5:
 
             cv2.imwrite("frame%d.jpg" % count, frame) # save frame as JPEG file
-            img = cv2.imread("frame%d.jpg" % count, frame)
-            px = img[x, y]
-            print px
-            labels.main("frame%d.jpg" % count)
+
+            #px = frame[x, y]
+            #print px
+            frame_list.append(labels.main("frame%d.jpg" % count))
 
             makeQuery = False
             queryMadeTime = time.time()
             # count += 1
 
+            # Write json data to text file
+            with open(OUTPUTFILENAME, 'w') as outfile:
+                json.dump(frame_list, outfile)
+
 
 	# if the `q` key is pressed, break from the lop
 	if key == ord("q"):
 		break
+
+# Write json data to text file
+with open(OUTPUTFILENAME, 'w') as outfile:
+    json.dump(frame_list, outfile)
 
 # cleanup the camera and close any open windows
 camera.release()
