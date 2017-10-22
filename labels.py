@@ -65,28 +65,6 @@ def detect_labels(path):
 # [END def_detect_labels]
 
 
-
-# [START def_detect_logos]
-def detect_logos(path):
-    """Detects logos in the file."""
-    client = vision.ImageAnnotatorClient()
-
-    # [START migration_logo_detection]
-    with io.open(path, 'rb') as image_file:
-        content = image_file.read()
-
-    image = types.Image(content=content)
-
-    response = client.logo_detection(image=image)
-    logos = response.logo_annotations
-    print('Logos:')
-
-    for logo in logos:
-        print(logo.description)
-    # [END migration_logo_detection]
-# [END def_detect_logos]
-
-
 # [START def_detect_text]
 def detect_text(path):
     """Detects text in the file."""
