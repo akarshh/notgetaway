@@ -37,7 +37,11 @@ import subprocess
 from google.cloud import vision
 from google.cloud.vision import types
 
+# Define Global Variables
 globalList = []
+PRACTICE_IMAGE_PATH = "./car2.jpg"
+
+
 # [START def_detect_labels]
 def detect_labels(path):
     """Detects labels in the file."""
@@ -53,7 +57,7 @@ def detect_labels(path):
     labels = response.label_annotations
     for label in labels:
         globalList.append(label.description)
-    print globalList
+    # print globalList
 #     print('Labels:')
 #     for label in labels:
 #         print(label.description)
@@ -99,7 +103,7 @@ def detect_text(path):
 
     for text in texts:
         globalList.append(text.description)
-    print globalList
+    # print globalListt
     # print('Texts:')
     # for text in texts:
     #     print('\n"{}"'.format(text.description))
@@ -140,42 +144,52 @@ def detect_properties(path):
 # [END def_detect_properties]
 
 
-def run_local(args):
-    if args.command == 'labels':
-        detect_labels(args.path)
-    elif args.command == 'text':
-        detect_text(args.path)
-    elif args.command == 'logos':
-        detect_logos(args.path)
-    elif args.command == 'properties':
-        detect_properties(args.path)
+def run_local(path_to_image):
+    detect_labels(path_to_image)
+    detect_text(path_to_image)
+    detect_text(path_to_image)
+    # detect_logos doens't append to globalList yet
+    detect_logos(path_to_image)
+    print(globalList)
+    # if args.command == 'labels':
+    #     detect_labels(args.path)
+    # elif args.command == 'text':
+    #     detect_text(args.path)
+    # elif args.command == 'logos':
+    #     detect_logos(args.path)
+    # elif args.command == 'properties':
+    #     detect_properties(args.path)
+
+def main():
+    run_local(PRACTICE_IMAGE_PATH)
+
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
-    subparsers = parser.add_subparsers(dest='command')
+    # parser = argparse.ArgumentParser(
+    #     description=__doc__,
+    #     formatter_class=argparse.RawDescriptionHelpFormatter)
+    # subparsers = parser.add_subparsers(dest='command')
+    #
+    # detect_labels_parser = subparsers.add_parser(
+    #     'labels', help=detect_labels.__doc__)
+    # detect_labels_parser.add_argument('path')
+    #
+    #
+    # detect_text_parser = subparsers.add_parser(
+    #     'text', help=detect_text.__doc__)
+    # detect_text_parser.add_argument('path')
+    #
+    #
+    # detect_logos_parser = subparsers.add_parser(
+    #     'logos', help=detect_logos.__doc__)
+    # detect_logos_parser.add_argument('path')
+    #
+    #
+    # properties_parser = subparsers.add_parser(
+    #     'properties', help=detect_properties.__doc__)
+    # properties_parser.add_argument('path')
+    #
+    #
+    # args = parser.parse_args()
 
-    detect_labels_parser = subparsers.add_parser(
-        'labels', help=detect_labels.__doc__)
-    detect_labels_parser.add_argument('path')
-
-
-    detect_text_parser = subparsers.add_parser(
-        'text', help=detect_text.__doc__)
-    detect_text_parser.add_argument('path')
-
-
-    detect_logos_parser = subparsers.add_parser(
-        'logos', help=detect_logos.__doc__)
-    detect_logos_parser.add_argument('path')
-
-
-    properties_parser = subparsers.add_parser(
-        'properties', help=detect_properties.__doc__)
-    properties_parser.add_argument('path')
-
-
-    args = parser.parse_args()
-
-    run_local(args)
+    main()

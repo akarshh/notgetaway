@@ -4,6 +4,15 @@ import datetime
 import imutils
 import time
 import cv2
+import subprocess
+
+# Import helper script
+import labels
+
+# initialize variables for later
+makeQuery = False
+queryMadeTime = 0
+
 
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
@@ -19,11 +28,12 @@ if args.get("video", None) is None:
 # otherwise, we are reading from a video file
 else:
 	camera = cv2.VideoCapture(args["video"])
+# camera = cv2.VideoCapture("statCam.avi")
 
 # initialize the first frame in the video stream
 firstFrame = None
 
-# Counter to reset firstFrame every 2 seconds
+# Counter to reset firstFrame every 1 second
 startTime = time.time()
 
 # loop over the frames of the video
@@ -33,19 +43,21 @@ while True:
 	(grabbed, frame) = camera.read()
 	text = "No movement"
 
+
 	# if the frame could not be grabbed, then we have reached the end
 	# of the video
 	if not grabbed:
 		break
+
 
 	# resize the frame, convert it to grayscale, and blur it
 	frame = imutils.resize(frame, width=500)
 	gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 	gray = cv2.GaussianBlur(gray, (21, 21), 0)
 
-	# Counter to reset firstFrame every 2 seconds
+	# Counter to reset firstFrame every 1 seconds
 	currentTime = time.time()
-	if ((currentTime - startTime) > 3):
+	if ((currentTime - startTime) > 1):
 		startTime = currentTime
 		firstFrame = None
 
@@ -71,11 +83,15 @@ while True:
 		if cv2.contourArea(c) < args["min_area"]:
 			continue
 
+		# If contour large enough, must makeQuery after exiting loop
+		makeQuery = True
+
 		# compute the bounding box for the contour, draw it on the frame,
 		# and update the text
 		(x, y, w, h) = cv2.boundingRect(c)
 		cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 		text = "Movement detected"
+
 
 
     # draw the text and timestamp on the frame
@@ -90,6 +106,16 @@ while True:
 	# cv2.imshow("Thresh", thresh)
 	# cv2.imshow("Frame Delta", frameDelta)
 	key = cv2.waitKey(1) & 0xFF
+
+	if makeQuery and (time.time() - queryMadeTime) > 3.5:
+			Make sample query
+			labels.main()
+			#
+			# placeholder for query
+			# print ("Querying...")
+
+			makeQuery = False
+			queryMadeTime = time.time()
 
 	# if the `q` key is pressed, break from the lop
 	if key == ord("q"):
