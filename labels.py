@@ -65,12 +65,14 @@ def detect_labels(path):
             globalList[1] = label
         if label in car_type:
             globalList[2] = model
-    if globalList[1] == None:
-        globalList[1] = labels[0]
+
+        if globalList[1] == None:
+            globalList[1] = labels[0].description
+
+        if globalList[2] == None:
+            globalList[2] = labels[1].description
 
 
-    if globalList[2] == None:
-        globalList[2] = labels[1]
 
 # [START def_detect_text]
 def detect_text(path):

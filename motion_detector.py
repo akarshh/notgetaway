@@ -121,6 +121,9 @@ while True:
             #print px
             frame_list.append(labels.main("frame%d.jpg" % count))
 
+            print("Query made...")
+            print(frame_list, '\n')
+
             makeQuery = False
             queryMadeTime = time.time()
             # count += 1
